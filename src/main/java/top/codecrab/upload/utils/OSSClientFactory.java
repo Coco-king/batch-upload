@@ -11,18 +11,15 @@ import top.codecrab.upload.config.AliyunConfig;
 public class OSSClientFactory {
 
     public static OSS getInstance() {
-        return Inner.INSTANCE;
+        return INSTANCE;
     }
 
-    private static class Inner {
+    private static final OSS INSTANCE;
 
-        private static final OSS INSTANCE;
-
-        static {
-            INSTANCE = new OSSClientBuilder().build(
-                AliyunConfig.endpoint, AliyunConfig.accessKeyId, AliyunConfig.accessKeySecret
-            );
-        }
+    static {
+        INSTANCE = new OSSClientBuilder().build(
+            AliyunConfig.endpoint, AliyunConfig.accessKeyId, AliyunConfig.accessKeySecret
+        );
     }
 
 }

@@ -29,11 +29,8 @@ public class AliyunUpload implements Callable<String> {
 
     private final MultipartFile file;
 
-    private final OSS ossClient;
-
-    public AliyunUpload(OSS ossClient, MultipartFile file) {
+    public AliyunUpload(MultipartFile file) {
         this.file = file;
-        this.ossClient = ossClient;
     }
 
     /**
@@ -44,24 +41,24 @@ public class AliyunUpload implements Callable<String> {
         //获取文件名称
         String fileName = file.getOriginalFilename();
         //生成存储路径
-        String save_handler_path = saveLocalPath + saveContextPath;
+        String saveHandlerPath = saveLocalPath + saveContextPath;
         //获得文件后缀
         String prefix = fileName.substring(fileName.lastIndexOf("."));
         //存储目录
-        File parentDir = new File(save_handler_path);
+        File parentDir = new File(saveHandlerPath);
         //存储目录是否存在
         if (!parentDir.exists()) {
             parentDir.mkdirs();
         }
         //生成文件存储名称
-        String fileSaveName = RandomUtil.randomString(7) + new Date().getTime() + prefix;
+        String fileSaveName = RandomUtil.randomString(7) + System.currentTimeMillis() + prefix;
         try {
-            File saveFile = new File(save_handler_path, fileSaveName);
+            File saveFile = new File(saveHandlerPath, fileSaveName);
             //移动临时文件
             file.transferTo(saveFile);
             //新增阿里云文件上传
-            String fileUrl = this.uploadFile(save_handler_path + fileSaveName, saveContextPath + fileSaveName);
-            saveFile.delete();
+            String fileUrl = this.uploadFile(saveHandlerPath + fileSaveName, saveContextPath + fileSaveName);
+            saveFile.deleteOnExit();
             return fileUrl;
         } catch (IOException e) {
             return null;
@@ -72,6 +69,7 @@ public class AliyunUpload implements Callable<String> {
      * 断点续传
      */
     private String uploadFile(String uploadFile, String savePathName) {
+        OSS ossClient = OSSClientFactory.getInstance();
         // 判断桶是否存在
         if (!ossClient.doesBucketExist(AliyunConfig.bucketName)) {
             // 不存在则创建桶

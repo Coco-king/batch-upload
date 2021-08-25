@@ -1,6 +1,5 @@
 package top.codecrab.upload.utils;
 
-import com.aliyun.oss.OSS;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -21,7 +20,6 @@ public class UploadUtil {
      */
     public static List<String> multithreadedUpload(MultipartFile[] files) {
         List<String> result = new CopyOnWriteArrayList<>();
-        OSS ossClient = OSSClientFactory.getInstance();
         try {
             int length = files.length;
             final BlockingQueue<Future<String>> queue = new LinkedBlockingDeque<>(length);
@@ -29,7 +27,7 @@ public class UploadUtil {
             final CompletionService<String> completionService = new ExecutorCompletionService<>(ThreadPoolFactory.getInstance(), queue);
 
             for (MultipartFile file : files) {
-                completionService.submit(new AliyunUpload(ossClient, file));
+                completionService.submit(new AliyunUpload(file));
             }
             for (int i = 0; i < length; i++) {
                 Future<String> future = completionService.take();
@@ -39,7 +37,7 @@ public class UploadUtil {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }/* finally {
-            //如果关闭连接，第二次批量上传就会失败，因为这里使用的OSSClient是单例的。也可以随时new，具体取舍自己定
+            //如果关闭连接，第二次批量上传就会失败，因为这里使用的OSSClient是单例的。也可以随时new，具体取舍自己定，推荐不关闭
             ossClient.shutdown();
         }*/
         return result;
