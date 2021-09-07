@@ -44,4 +44,11 @@ public class UploadController {
         });
         return ResponseEntity.ok(result);
     }
+
+    @PostMapping("/zip")
+    public ResponseEntity<List<String>> zip(MultipartFile file) {
+        List<String> result = UploadUtil.upload(file, "uploadTest");
+        System.out.println(JSONUtil.toJsonStr(result));
+        return ResponseEntity.ok(result);
+    }
 }
