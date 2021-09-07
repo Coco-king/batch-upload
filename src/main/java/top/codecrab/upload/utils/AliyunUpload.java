@@ -16,7 +16,7 @@ import top.codecrab.upload.config.AliyunConfig;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
 
 @Slf4j
 public class AliyunUpload implements Callable<String> {

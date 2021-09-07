@@ -1,6 +1,10 @@
 package top.codecrab.upload.utils;
 
-import com.aliyun.oss.OSS;
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.CharsetUtil;
+import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.ZipUtil;
 import org.springframework.web.multipart.MultipartFile;
 import top.codecrab.upload.config.AliyunConfig;
 
